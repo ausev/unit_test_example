@@ -1,0 +1,7 @@
+build/*
+lib/*
+objs/*
+example_test_tests
+example_test_tests.txt
+.vscode/*
+out
