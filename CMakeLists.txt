@@ -8,5 +8,5 @@ add_library(
     example.h
 )
 
-add_executable(test main.c example.c)
-target_link_libraries(test PRIVATE example)
+add_executable(out main.c example.c)
+target_link_libraries(out PRIVATE example)
