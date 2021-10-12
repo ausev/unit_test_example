@@ -1,5 +1,4 @@
 #include "example.h"
-// #include "example_test.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -11,5 +10,3 @@ int main(){
 
     return 0;
 }
-
-// gcc main.c example.c -I. -o out

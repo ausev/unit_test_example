@@ -23,3 +23,7 @@ TEST_SRC_FILES = AllTests.cpp example_test.cpp
 INCLUDE_DIRS = $(CPPUTEST_HOME)/include .
 
 include $(CPPUTEST_HOME)/build/MakefileWorker.mk
+
+executable:
+	$(SILENCE) gcc main.c example.c -I. -o out
+	$(SILENCE) ./out
