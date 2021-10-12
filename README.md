@@ -13,7 +13,7 @@ tests: NA
 
 v1_cmake: Basic cmake example is implemented here, Tests as well as executable can be build. Test files are separated with src files. Commands:
 exe: "cmake -S . -B build && cmake --build build && build/src/out"
-tests: "cmake -DCOMPILE_TESTS=ON -S . -B build && cmake --build build && build/tests/example_tests 
+tests: "cmake -DCOMPILE_TESTS=ON -S . -B build && cmake --build build && build/test/example_tests 
 
 ALL COMMANDS SHOULD BE EXECUTED FROM ROOT PROJECT DIR
 
