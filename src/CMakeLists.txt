@@ -1,5 +1,1 @@
-add_library(example example.c)
-
-add_executable(out main.c)
-
-target_link_libraries(out example)
+add_subdirectory(drv/int1)
