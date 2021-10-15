@@ -10,6 +10,10 @@ else()
     message(STATUS "Found CppUTest version ${CPPUTEST_VERSION}")
 endif()
 
+# set(Test_files
+#     /home/auseve/Dev/unit_test_example/tests/intreturn1_test.cpp
+# )
+
 # (2) Our unit tests sources
 set(TEST_APP_NAME example_tests)
 set(TEST_SOURCES
