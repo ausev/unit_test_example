@@ -35,14 +35,26 @@ set(Test_src
     src/drv/int1/returnint1.c
     src/drv/int2/returnint2.c
     src/drv/int3/returnint3.c
+    src/api/num1/returnnum1.c
+    src/api/num2/returnnum2.c
+    src/api/num3/returnnum3.c
+
 )
 
 set (TEST_INC
     src/drv/int1/
     src/drv/int2/
     src/drv/int3/
+    src/api/num1/
+    src/api/num2/
+    src/api/num3/
 )
 
+set (MOCKS
+    tests/Mocks/int1/returnint1_mock.cpp
+    tests/Mocks/int2/returnint2_mock.cpp
+    tests/Mocks/int3/returnint3_mock.cpp
+)
 
 
 # (2) Our unit tests sources
@@ -56,17 +68,42 @@ include_directories(${CPPUTEST_INCLUDE_DIRS} ${TEST_INC})
 link_directories(${CPPUTEST_LIBRARIES})
 
 # (4) Build the unit tests objects and link then with the app library
-add_executable(intreturn1_test tests/AllTests.cpp tests/intreturn1_test.cpp)
+
+add_library(intreturner1_mock tests/Mocks/int1/returnint1_mock.cpp)
+add_library(intreturner2_mock tests/Mocks/int2/returnint2_mock.cpp)
+add_library(intreturner3_mock tests/Mocks/int3/returnint3_mock.cpp)
+
+add_library(numreturner1 src/api/num1/returnnum1.c)
+add_library(numreturner2 src/api/num2/returnnum2.c)
+add_library(numreturner3 src/api/num3/returnnum3.c)
+
 add_library(intreturner1 src/drv/int1/returnint1.c)
-target_link_libraries(intreturn1_test intreturner1 ${CPPUTEST_LDFLAGS})
+add_library(intreturner2 src/drv/int2/returnint2.c)
+add_library(intreturner3 src/drv/int3/returnint3.c)
+
+
+#  int returner
+add_executable(intreturn1_test tests/AllTests.cpp tests/intreturn1_test.cpp)
+target_link_libraries(intreturn1_test intreturner1 intreturner2_mock intreturner3_mock ${CPPUTEST_LDFLAGS})
 
 add_executable(intreturn2_test tests/AllTests.cpp tests/intreturn2_test.cpp)
-add_library(intreturner2 src/drv/int2/returnint2.c)
-target_link_libraries(intreturn2_test intreturner2 ${CPPUTEST_LDFLAGS})
+target_link_libraries(intreturn2_test intreturner1_mock intreturner2 intreturner3_mock ${CPPUTEST_LDFLAGS})
 
 add_executable(intreturn3_test tests/AllTests.cpp tests/intreturn3_test.cpp)
-add_library(intreturner3 src/drv/int3/returnint3.c)
-target_link_libraries(intreturn3_test intreturner3 ${CPPUTEST_LDFLAGS})
+target_link_libraries(intreturn3_test intreturner1_mock intreturner2_mock intreturner3 ${CPPUTEST_LDFLAGS})
+
+
+#  num returner
+add_executable(numreturn1_test tests/AllTests.cpp tests/numreturn1_test.cpp)
+target_link_libraries(numreturn1_test numreturner1 intreturner1_mock intreturner2_mock intreturner3_mock ${CPPUTEST_LDFLAGS})
+
+add_executable(numreturn2_test tests/AllTests.cpp tests/numreturn2_test.cpp)
+target_link_libraries(numreturn2_test numreturner2 intreturner1_mock intreturner2_mock intreturner3_mock ${CPPUTEST_LDFLAGS})
+
+add_executable(numreturn3_test tests/AllTests.cpp tests/numreturn3_test.cpp)
+target_link_libraries(numreturn3_test numreturner3 intreturner1_mock intreturner2_mock intreturner3_mock ${CPPUTEST_LDFLAGS})
+
+
 # add_executable(${TEST_APP_NAME} ${TEST_SOURCES})
 # add_executable(${TEST_APP_NAME} ${TEST_SOURCES})
 # target_link_libraries(${TEST_APP_NAME} example ${CPPUTEST_LDFLAGS})
