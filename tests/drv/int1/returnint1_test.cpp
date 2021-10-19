@@ -14,6 +14,6 @@ TEST_GROUP(intreturn1)
 TEST(intreturn1, intreturner_BasicExample1)
 {
   CHECK_EQUAL(1,intreturner1(1));
-  
+
 }
 
