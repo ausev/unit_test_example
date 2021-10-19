@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(ExampleProject VERSION 1.0.0)
 
+enable_testing()
+
 SET(CMAKE_CXX_FLAGS  "-m32")
 SET(CMAKE_C_FLAGS  "-m32")
 SET(CMAKE_EXE_LINKER_FLAGS  "-m32")
@@ -111,22 +113,6 @@ link_directories(${CPPUTEST_LIBRARIES})
 # target_link_libraries(numreturn3_test numreturner3 intreturner1_mock intreturner2_mock intreturner3_mock ${CPPUTEST_LDFLAGS})
 
 
-# add_library(returnint1_mock tests/Mocks/int1/returnint1_mock.cpp)
-# add_library(returnint2_mock tests/Mocks/int2/returnint2_mock.cpp)
-# add_library(returnint3_mock tests/Mocks/int3/returnint3_mock.cpp)
-
-# add_library(returnnum1 src/api/num1/returnnum1.c)
-# add_library(returnnum2 src/api/num2/returnnum2.c)
-# add_library(returnnum3 src/api/num3/returnnum3.c)
-
-# add_library(returnint1 src/drv/int1/returnint1.c)
-# add_library(returnint2 src/drv/int2/returnint2.c)
-# add_library(returnint3 src/drv/int3/returnint3.c)
-
-# add_executable(returnint1_test tests/AllTests.cpp tests/returnint1_test.cpp)
-# target_link_libraries(returnint1_test returnint1 ${CPPUTEST_LDFLAGS})
-
-
 # 1
 # make original source libs
 set(SOURCE_LIB_LIST)
@@ -146,34 +132,49 @@ endforeach()
 
 # 3
 # add executables
-set(EXE_NAME_LIST)
+set(TEST_RESULT_LIST)
+
+add_test(NAME mytest1 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c)
 foreach(TEST_CASE_FILE ${TEST_CASE_SRC_LIST})
-    
     get_filename_component(EXE_NAME ${TEST_CASE_FILE} NAME_WE)
     add_executable(${EXE_NAME} ${TEST_EXE_FILES} ${TEST_CASE_FILE})
-    list(APPEND EXE_NAME_LIST ${EXE_NAME})
+    # list(APPEND EXE_NAME_LIST ${EXE_NAME})
     set(MOCK_LIB_LIST_COPY ${MOCK_LIB_LIST})
     string(FIND ${EXE_NAME} "_test" str_index)
     string(SUBSTRING ${EXE_NAME} 0 ${str_index} found_str)
     string(CONCAT mock_to_remove ${found_str} "_mock")
     list(REMOVE_ITEM MOCK_LIB_LIST_COPY ${mock_to_remove})
 
+    target_link_libraries(${EXE_NAME} ${found_str} ${MOCK_LIB_LIST_COPY} ${CPPUTEST_LDFLAGS})
+    # add_test()
+    string(CONCAT test_result_name ${EXE_NAME} ".txt")
+    list(APPEND TEST_RESULT_LIST ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name})
+
     add_custom_command(TARGET ${EXE_NAME} POST_BUILD
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
-        COMMAND ${EXE_NAME} -c
-        # COMMENT "Running ${EXE_NAME}"
+        COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c > ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name} 2>&1; exit 0"
+        # COMMAND ${EXE_NAME} -c | tee --output-error=exit ${test_result_name}
+        # COMMAND ${EXE_NAME} -c | tee ${test_result_name}
+        # COMMAND echo "${EXE_NAME} result" >> ${test_result_name}
+        # COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c | tee /dev/null"
+        # COMMAND /bin/bash -c "/bin/cat ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name}"
         VERBATIM
     )
-
-    target_link_libraries(${EXE_NAME} ${found_str} ${MOCK_LIB_LIST_COPY} ${CPPUTEST_LDFLAGS})
-
+    
 
 endforeach()
 
+# add_custom_command(TARGET 
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
+#     COMMAND cat ${TEST_RESULT_LIST} 
+#     DEPENDS ${TEST_RESULT_LIST}
+#     VERBATIM
+# )
 # foreach(EXE_NAME ${EXE_NAME_LIST})
 #     add_custom_command(TARGET ${EXE_NAME} POST_BUILD
-#     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
+#     DEPENDS ${EXE_NAME_LIST}
+#     COMMAND ${EXE_NAME} -c
 #     # COMMENT "Running ${EXE_NAME}"
 #     VERBATIM
 # )
