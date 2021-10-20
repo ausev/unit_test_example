@@ -15,6 +15,12 @@ v1_cmake: Basic cmake example is implemented here, Tests as well as executable c
 exe: "cmake -S . -B build && cmake --build build && build/src/out"
 tests: "cmake -DCOMPILE_TESTS=ON -S . -B build && cmake --build build && build/test/example_tests 
 
+v2_cmake: 
+TBD
+
+v3_cmake:
+
+
 ALL COMMANDS SHOULD BE EXECUTED FROM ROOT PROJECT DIR
 
 NOTE: this example works with environment (tested on container) which has cpputest libs build with 32bit option. Also environment variable CPPUTEST_HOME should be equal to cpputest directory, for example /opt/cpputest
