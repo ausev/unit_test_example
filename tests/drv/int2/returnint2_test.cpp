@@ -13,6 +13,6 @@ TEST_GROUP(intreturn2)
 
 TEST(intreturn2, intreturner_BasicExample1)
 {
-  CHECK_EQUAL(2,intreturner2(2));
+  CHECK_EQUAL(2,intreturner2(3));
 }
 

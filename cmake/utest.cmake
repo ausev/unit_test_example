@@ -30,73 +30,26 @@ else()
     message(STATUS "Found CppUTest version ${CPPUTEST_VERSION}")
 endif()
 
-set(test_files_list
-    # tests/returnint1_test.cpp
-    # tests/returnint2_test.cpp
-    # tests/returnint3_test.cpp
-    # tests/returnnum1_test.cpp
-    # tests/returnnum2_test.cpp
-    # tests/returnnum3_test.cpp
-)
-
-set(test_source_list
-    # src/drv/int1/returnint1.c
-    # src/drv/int2/returnint2.c
-    # src/drv/int3/returnint3.c
-    # src/api/num1/returnnum1.c
-    # src/api/num2/returnnum2.c
-    # src/api/num3/returnnum3.c
-
-)
-
-set (test_include_dir_list
-    # src/drv/int1/
-    # src/drv/int2/
-    # src/drv/int3/
-    # src/api/num1/
-    # src/api/num2/
-    # src/api/num3/
-)
-
-set (test_mocks_list
-    # tests/Mocks/int1/returnint1_mock.cpp
-    # tests/Mocks/int2/returnint2_mock.cpp
-    # tests/Mocks/int3/returnint3_mock.cpp
-)
 
 set (test_exe_files
     tests/AllTests.cpp
 )
 
-macro (utest_add_test_source test_source)
-    list(APPEND test_source_list ${CMAKE_CURRENT_SOURCE_DIR}/${test_source})
-endmacro()
-
-macro (utest_add_test_file test_file)
-    list(APPEND test_files_list ${CMAKE_CURRENT_SOURCE_DIR}/${test_file})
-endmacro()
-
-macro (utest_add_test_include_dir include_dir)
-    list(APPEND test_include_dir_list ${CMAKE_CURRENT_SOURCE_DIR}/${include_dir})
-endmacro()
-
-macro (utest_add_test_mock test_mock)
-    list(APPEND test_mocks_list ${CMAKE_CURRENT_SOURCE_DIR}/${test_mock})
-endmacro()
-
 
 # 1
 # make original source libs
-set(source_lib_list)
+get_property(test_source_list GLOBAL PROPERTY test_source_list)
 foreach(test_source ${test_source_list})
     get_filename_component(lib_name ${test_source} NAME_WE)
+    message(${test_source})
     list(APPEND source_lib_list ${lib_name})
     add_library(${lib_name} ${test_source})
 endforeach()
+message(${source_lib_list})
 
-# 2
-# make mock libs
-set(mock_lib_list)
+# # 2
+# # make mock libs
+get_property(test_mocks_list GLOBAL PROPERTY test_mocks_list)
 foreach(test_mock ${test_mocks_list})
     get_filename_component(lib_name ${test_mock} NAME_WE)
     list(APPEND mock_lib_list ${lib_name})
@@ -104,16 +57,17 @@ foreach(test_mock ${test_mocks_list})
 endforeach()
 
 # 3
-# add executables
-set(TEST_RESULT_LIST)
+# add includes
+get_property(test_include_dir_list GLOBAL PROPERTY test_include_dir_list)
+include_directories(${CPPUTEST_INCLUDE_DIRS} ${test_include_dir_list})
+link_directories(${CPPUTEST_LIBRARIES})
 
-# add_test(NAME mytest1 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_exe} -c)
 
+get_property(test_files_list GLOBAL PROPERTY test_files_list)
 foreach(test_file ${test_files_list})
     # 
     get_filename_component(test_exe ${test_file} NAME_WE)
     add_executable(${test_exe} ${test_exe_files} ${test_file})
-    # list(APPEND test_exe_LIST ${test_exe})
     set(mock_lib_list_copy ${mock_lib_list})
     string(FIND ${test_exe} ${TEST_FILE_SUFIX} test_file_sufix_index)
     string(SUBSTRING ${test_exe} 0 ${test_file_sufix_index} test_source_to_use)
@@ -123,18 +77,23 @@ foreach(test_file ${test_files_list})
 
     target_link_libraries(${test_exe} ${test_source_to_use} ${mock_lib_list_copy} ${CPPUTEST_LDFLAGS})
 
-    # string(CONCAT test_result_name ${test_exe} ".txt")
-    # list(APPEND TEST_RESULT_LIST ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name})
+    string(CONCAT test_result_file_name ${test_exe} ".txt")
+    set(test_result_file ${CMAKE_BINARY_DIR}/${test_result_file_name})
+
+    # clean result file if "make clean" is called
+    set_property(
+        TARGET ${test_exe}
+        APPEND
+        PROPERTY ADDITIONAL_CLEAN_FILES ${test_result_file}
+)
 
     add_custom_command(TARGET ${test_exe} POST_BUILD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
-        COMMAND ${test_exe} -c
-        # COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${test_exe} -c > ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name} 2>&1; exit 0"
-        # COMMAND ${test_exe} -c | tee --output-error=exit ${test_result_name}
-        # COMMAND ${test_exe} -c | tee ${test_result_name}
-        # COMMAND echo "${test_exe} result" >> ${test_result_name}
-        # COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${test_exe} -c | tee /dev/null"
-        # COMMAND /bin/bash -c "/bin/cat ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name}"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND /bin/bash -c "echo -e '\\033[1;33m${test_exe} result:\\033[0m' > ${test_result_file}"
+        COMMAND /bin/bash -c "${CMAKE_BINARY_DIR}/${test_exe} -c >> ${test_result_file} 2>&1; exit 0"
+        COMMAND /bin/bash -c "cat ${test_result_file}"
+        COMMAND /bin/bash -c "OK=$(cat -A ${test_result_file} | grep \"\\^\\[\\[32;1mOK\"); if [ -n \"$OK\" ]; then exit 0; else exit 1; fi"
         VERBATIM
     )
+
 endforeach()

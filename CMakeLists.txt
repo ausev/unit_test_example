@@ -1,72 +1,81 @@
 cmake_minimum_required(VERSION 3.16)
 project(ExampleProject VERSION 1.0.0)
 
-SET(CMAKE_CXX_FLAGS  "-m32")
-SET(CMAKE_C_FLAGS  "-m32")
-SET(CMAKE_EXE_LINKER_FLAGS  "-m32")
+# SET(CMAKE_CXX_FLAGS  "-m32")
+# SET(CMAKE_C_FLAGS  "-m32")
+# SET(CMAKE_EXE_LINKER_FLAGS  "-m32")
 
-# add_subdirectory(src)
-# add_subdirectory(main)
+# # add_subdirectory(src)
+# # add_subdirectory(main)
 
-# option(COMPILE_TESTS "Compile the tests" OFF)
-# if(COMPILE_TESTS)
-#   add_subdirectory(tests)
-# endif(COMPILE_TESTS)
+# # option(COMPILE_TESTS "Compile the tests" OFF)
+# # if(COMPILE_TESTS)
+# #   add_subdirectory(tests)
+# # endif(COMPILE_TESTS)
 
-# (1) Look for installed version of CppUTest
-if(DEFINED ENV{CPPUTEST_HOME})
-    message(STATUS "Using CppUTest home: $ENV{CPPUTEST_HOME}")
-    set(CPPUTEST_INCLUDE_DIRS $ENV{CPPUTEST_HOME}/include)
-    set(CPPUTEST_LIBRARIES $ENV{CPPUTEST_HOME}/lib)
-    set(CPPUTEST_LDFLAGS CppUTest CppUTestExt)
-else()
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(CPPUTEST REQUIRED cpputest>=3.8)
-    message(STATUS "Found CppUTest version ${CPPUTEST_VERSION}")
-endif()
+# # (1) Look for installed version of CppUTest
+# if(DEFINED ENV{CPPUTEST_HOME})
+#     message(STATUS "Using CppUTest home: $ENV{CPPUTEST_HOME}")
+#     set(CPPUTEST_INCLUDE_DIRS $ENV{CPPUTEST_HOME}/include)
+#     set(CPPUTEST_LIBRARIES $ENV{CPPUTEST_HOME}/lib)
+#     set(CPPUTEST_LDFLAGS CppUTest CppUTestExt)
+# else()
+#     find_package(PkgConfig REQUIRED)
+#     pkg_search_module(CPPUTEST REQUIRED cpputest>=3.8)
+#     message(STATUS "Found CppUTest version ${CPPUTEST_VERSION}")
+# endif()
 
-set(TEST_CASE_SRC_LIST
-    tests/returnint1_test.cpp
-    tests/returnint2_test.cpp
-    tests/returnint3_test.cpp
-    tests/returnnum1_test.cpp
-    tests/returnnum2_test.cpp
-    tests/returnnum3_test.cpp
+# set(TEST_CASE_SRC_LIST
+#     tests/returnint1_test.cpp
+#     tests/returnint2_test.cpp
+#     tests/returnint3_test.cpp
+#     tests/returnnum1_test.cpp
+#     tests/returnnum2_test.cpp
+#     tests/returnnum3_test.cpp
 
-)
+# )
 
-set(TEST_SRC_LIST
-    src/drv/int1/returnint1.c
-    src/drv/int2/returnint2.c
-    src/drv/int3/returnint3.c
-    src/api/num1/returnnum1.c
-    src/api/num2/returnnum2.c
-    src/api/num3/returnnum3.c
+# set(TEST_SRC_LIST
+#     src/drv/int1/returnint1.c
+#     src/drv/int2/returnint2.c
+#     src/drv/int3/returnint3.c
+#     src/api/num1/returnnum1.c
+#     src/api/num2/returnnum2.c
+#     src/api/num3/returnnum3.c
 
-)
+# )
 
-set (TEST_INC_LIST
-    src/drv/int1/
-    src/drv/int2/
-    src/drv/int3/
-    src/api/num1/
-    src/api/num2/
-    src/api/num3/
-)
+# set (TEST_INC_LIST
+#     src/drv/int1/
+#     src/drv/int2/
+#     src/drv/int3/
+#     src/api/num1/
+#     src/api/num2/
+#     src/api/num3/
+# )
 
-set (TEST_MOCKS_LIST
-    tests/Mocks/int1/returnint1_mock.cpp
-    tests/Mocks/int2/returnint2_mock.cpp
-    tests/Mocks/int3/returnint3_mock.cpp
-)
+# set (TEST_MOCKS_LIST
+#     tests/Mocks/int1/returnint1_mock.cpp
+#     tests/Mocks/int2/returnint2_mock.cpp
+#     tests/Mocks/int3/returnint3_mock.cpp
+# )
 
-set (TEST_EXE_FILES
-    tests/AllTests.cpp
-)
+# set (TEST_EXE_FILES
+#     tests/AllTests.cpp
+# )
 
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/functions.cmake)
 
+add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(mocks)
+
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/utest.cmake)
+
+
+# add_subdirectory(src)
+# add_subdirectory(tests)
+# add_subdirectory(mocks)
 
 # (2) Our unit tests sources
 # set(TEST_APP_NAME example_tests)
