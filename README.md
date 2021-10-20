@@ -1,13 +1,15 @@
-This is example of having basic unit test setup.
-It is planned to have 2 branches that shows example with raw Makefiles and Cmake
+This is example project of unit test setup with make + cpputest and cmake + cpputest. Mainly focused to build good example of unit tests
 
-Cmake_advanced_example shows example of more test build of more complicated file structure. Eventually Mock building will be included as well
+Tags explained:
 
-Commands to build tests:
-cmake: run "cmake -DCOMPILE_TESTS=ON -S . -B build && cmake --build build && build/tests/example_tests " inside project directory
+v3_cmake: Example of test building and executing is implemented here. This example does not contain main Executable. Only tests are build and executed. 
 
-Commands to build executables:
-cmake: run commands inside project directory: "cmake -S . -B build && cmake --build build && build/src/out" 
+
+command to build and tests: "cmake -DUNIT_TEST=ON -S . -B build && make -C build all -j$(nproc) --no-print-directory"
+
+
+ALL COMMANDS SHOULD BE EXECUTED FROM ROOT PROJECT DIR
+
 
 NOTE: this example works with environment (tested on container) which has cpputest libs build with 32bit option. Also environment variable CPPUTEST_HOME should be equal to cpputest directory, for example /opt/cpputest
 
