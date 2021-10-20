@@ -84,8 +84,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/utest.cmake)
 # )
 
 # (3) Take care of include directories
-include_directories(${CPPUTEST_INCLUDE_DIRS} ${TEST_INC_LIST})
-link_directories(${CPPUTEST_LIBRARIES})
+# include_directories(${CPPUTEST_INCLUDE_DIRS} ${TEST_INC_LIST})
+# link_directories(${CPPUTEST_LIBRARIES})
 
 # (4) Build the unit tests objects and link then with the app library
 
@@ -126,54 +126,7 @@ link_directories(${CPPUTEST_LIBRARIES})
 
 # 1
 # make original source libs
-set(SOURCE_LIB_LIST)
-foreach(SRC_FILE ${TEST_SRC_LIST})
-    get_filename_component(LIB_NAME ${SRC_FILE} NAME_WE)
-    list(APPEND SOURCE_LIB_LIST ${LIB_NAME})
-    add_library(${LIB_NAME} ${SRC_FILE})
-endforeach()
 
-# 2
-# make mock libs
-foreach(MOCK_FILE ${TEST_MOCKS_LIST})
-    get_filename_component(LIB_NAME ${MOCK_FILE} NAME_WE)
-    list(APPEND MOCK_LIB_LIST ${LIB_NAME})
-    add_library(${LIB_NAME} ${MOCK_FILE})
-endforeach()
-
-# 3
-# add executables
-set(TEST_RESULT_LIST)
-
-add_test(NAME mytest1 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c)
-foreach(TEST_CASE_FILE ${TEST_CASE_SRC_LIST})
-    get_filename_component(EXE_NAME ${TEST_CASE_FILE} NAME_WE)
-    add_executable(${EXE_NAME} ${TEST_EXE_FILES} ${TEST_CASE_FILE})
-    # list(APPEND EXE_NAME_LIST ${EXE_NAME})
-    set(MOCK_LIB_LIST_COPY ${MOCK_LIB_LIST})
-    string(FIND ${EXE_NAME} "_test" str_index)
-    string(SUBSTRING ${EXE_NAME} 0 ${str_index} found_str)
-    string(CONCAT mock_to_remove ${found_str} "_mock")
-    list(REMOVE_ITEM MOCK_LIB_LIST_COPY ${mock_to_remove})
-
-    target_link_libraries(${EXE_NAME} ${found_str} ${MOCK_LIB_LIST_COPY} ${CPPUTEST_LDFLAGS})
-    # add_test()
-    string(CONCAT test_result_name ${EXE_NAME} ".txt")
-    list(APPEND TEST_RESULT_LIST ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name})
-
-    add_custom_command(TARGET ${EXE_NAME} POST_BUILD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
-        COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c > ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name} 2>&1; exit 0"
-        # COMMAND ${EXE_NAME} -c | tee --output-error=exit ${test_result_name}
-        # COMMAND ${EXE_NAME} -c | tee ${test_result_name}
-        # COMMAND echo "${EXE_NAME} result" >> ${test_result_name}
-        # COMMAND /bin/bash -c "${CMAKE_CURRENT_SOURCE_DIR}/build/${EXE_NAME} -c | tee /dev/null"
-        # COMMAND /bin/bash -c "/bin/cat ${CMAKE_CURRENT_SOURCE_DIR}/build/${test_result_name}"
-        VERBATIM
-    )
-    
-
-endforeach()
 
 # add_custom_command(TARGET 
 #     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build
