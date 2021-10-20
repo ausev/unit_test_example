@@ -30,7 +30,6 @@ set (test_exe_files
 get_property(test_source_list GLOBAL PROPERTY test_source_list)
 foreach(test_source ${test_source_list})
     get_filename_component(lib_name ${test_source} NAME_WE)
-    message(${test_source})
     list(APPEND source_lib_list ${lib_name})
     add_library(${lib_name} ${test_source})
 endforeach()

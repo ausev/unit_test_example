@@ -1,3 +1,4 @@
+# Not sure if here 
 utest_add_test_source(api/num1/returnnum1.c)
 utest_add_test_source(api/num2/returnnum2.c)
 utest_add_test_source(api/num3/returnnum3.c)
@@ -11,6 +12,3 @@ utest_add_test_include_dir(api/num3)
 utest_add_test_include_dir(drv/int1)
 utest_add_test_include_dir(drv/int2)
 utest_add_test_include_dir(drv/int3)
-
-# add_subdirectory(api)
-# add_subdirectory(drv)
