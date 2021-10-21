@@ -1,3 +1,6 @@
+include(${CMAKE_CURRENT_LIST_DIR}/CodeCoverage.cmake)
+
+
 #sufixes, that must be added to test file and mock
 Set(TEST_FILE_SUFIX "_test")
 Set(TEST_MOCK_SUFIX "_mock")
@@ -86,18 +89,24 @@ foreach(test_file ${test_files_list})
         APPEND
         PROPERTY ADDITIONAL_CLEAN_FILES ${test_result_file}
 )
-    # adding command to execute test after it is build
-    add_custom_command(TARGET ${test_exe} POST_BUILD
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        # prepend test name to result file
-        COMMAND /bin/bash -c "echo -e '\\033[1;33m${test_exe} result:\\033[0m' > ${test_result_file}"
-        # append test result to result file
-        COMMAND /bin/bash -c "${CMAKE_BINARY_DIR}/${test_exe} -c >> ${test_result_file} 2>&1; exit 0"
-        # print result file contents
-        COMMAND /bin/bash -c "cat ${test_result_file}"
-        # if test failed and test result contains error log, exit command with error, so that every "make all" would print error message
-        COMMAND /bin/bash -c "OK=$(cat -A ${test_result_file} | grep \"\\^\\[\\[32;1mOK\"); if [ -n \"$OK\" ]; then exit 0; else exit 1; fi"
-        VERBATIM
+    setup_target_for_coverage_fastcov(
+        NAME ${test_exe}_coverage
+        EXECUTABLE ${test_exe}
+        DEPENDENCIES ${test_exe}
     )
+
+    # # adding command to execute test after it is build
+    # add_custom_command(TARGET ${test_exe} POST_BUILD
+    #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    #     # prepend test name to result file
+    #     COMMAND /bin/bash -c "echo -e '\\033[1;33m${test_exe} result:\\033[0m' > ${test_result_file}"
+    #     # append test result to result file
+    #     COMMAND /bin/bash -c "${CMAKE_BINARY_DIR}/${test_exe} -c >> ${test_result_file} 2>&1; exit 0"
+    #     # print result file contents
+    #     COMMAND /bin/bash -c "cat ${test_result_file}"
+    #     # if test failed and test result contains error log, exit command with error, so that every "make all" would print error message
+    #     COMMAND /bin/bash -c "OK=$(cat -A ${test_result_file} | grep \"\\^\\[\\[32;1mOK\"); if [ -n \"$OK\" ]; then exit 0; else exit 1; fi"
+    #     VERBATIM
+    # )
 
 endforeach()
